@@ -80,20 +80,20 @@ var MainLayer = cc.Scene.extend({
 		//开启连续物理测试
 		this.world.SetContinuousPhysics(true);
 		
-		var fixDef = new b2FixtureDef;
+		var fixDef = new b2FixtureDef();
 		fixDef.density = 1.0;
 		fixDef.friction = 0.5;
 		fixDef.restitution = 0.2;
 		
-		var bodyDef = new b2BodyDef;
+		var bodyDef = new b2BodyDef();
 		bodyDef.type = b2Body.b2_staticBody;
 		
-		fixDef.shape = new b2PolygonShape;
+		fixDef.shape = new b2PolygonShape();
 		var w = winSize.width;
 		var h = winSize.height;
 		
 		//设置宽度w的水平线
-		fixDef.shape.SetAsBox(w, h);
+		fixDef.shape.SetAsBox(w/2, 0);
 		//顶部
 		bodyDef.position.Set(w/2, h);
 		this.world.CreateBody(bodyDef).CreateFixture(fixDef);
@@ -109,9 +109,9 @@ var MainLayer = cc.Scene.extend({
 		bodyDef.position.Set(w, h/2);
 		this.world.CreateBody(bodyDef).CreateFixture(fixDef);
 		//检测碰撞设置接收碰撞回调函数
-		var listener = new b2ContactListener;
+		var listener = new b2ContactListener();
 		listener.BeginContact = function(contact) {
-			cc.log("BeginContact");
+			//cc.log("BeginContact");
 			var bodyA = contact.GetFixtureA().GetBody();
 			var bodyB = contact.GetFixtureB().GetBody();
 			var spriteA = bodyA.GetUserData();
@@ -122,7 +122,7 @@ var MainLayer = cc.Scene.extend({
 			}
 		}
 		listener.EndContact = function(contact) {
-			cc.log("EndContact");
+			//cc.log("EndContact");
 			var bodyA = contact.GetFixtureA().GetBody();
 			var bodyB = contact.GetFixtureB().GetBody();
 			var spriteA = bodyA.GetUserData();
@@ -133,10 +133,10 @@ var MainLayer = cc.Scene.extend({
 			}
 		}
 		listener.PostSolve = function(contact, impulse) {
-			cc.log("PostSolve");
+			//cc.log("PostSolve");
 		}
 		listener.PreSolve = function(contact, oldManifold) {
-			cc.log("PreSolve");
+			//cc.log("PreSolve");
 		}
 		this.world.SetContactListener(listener);
 	},
