@@ -9,7 +9,7 @@
     "renderMode" : 0,
     "engineDir":"frameworks/cocos2d-html5",
 
-    "modules" : ["actions", "menus", "audio", "labels", "ccpool", "chipmunk"],
+    "modules" : ["actions", "menus", "audio", "labels", "ccpool", "box2d"],
 
     "jsList" : [
         "src/resource.js",

@@ -7,7 +7,7 @@ var MainLayer = cc.Scene.extend({
 	_up_pad:null,
 	_round:0,
 	_listener:null,
-	space:null,
+	world:null,
 	_soundOn:null,				//静音按钮
 	_soundOff:null,
 	
@@ -22,7 +22,7 @@ var MainLayer = cc.Scene.extend({
 		this._ball = BallSprite.create(this);
 		this._ball.x = winSize.width / 2;
 		this._ball.y = winSize.height / 2;
-		this.addChild(this._ball);
+		this.addChild(this._ball, 1);
 		
 		//上拍
 		
@@ -30,10 +30,9 @@ var MainLayer = cc.Scene.extend({
 		this._down_pad = DownPadSprite.create(this);
 		this._down_pad.x = winSize.width / 2;
 		this._down_pad.y = winSize.height / 7;
-		this.addChild(this._down_pad);
+		this.addChild(this._down_pad, 1);
 		
 		//this._sdk_init();
-		this.onCollisionCheck();
 		//设置事件
 		var layerListener = null;
 		if ("touches" in cc.sys.capabilities) {
@@ -66,36 +65,80 @@ var MainLayer = cc.Scene.extend({
 	//物理引擎空间初始化
 	initPhysics:function() {
 		var winSize = cc.director.getWinSize();
-		this.space = new cp.Space();
-		this.setupDebugNode();
-		//设置重力
-		this.space.gravity = cp.v(0, 0);
-		//this.space.iterations = 15;
-		var staticBody = this.space.staticBody;
+		var b2Vec2 = Box2D.Common.Math.b2Vec2
+            , b2BodyDef = Box2D.Dynamics.b2BodyDef
+            , b2Body = Box2D.Dynamics.b2Body
+            , b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+            , b2World = Box2D.Dynamics.b2World
+            , b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+			, b2EdgeShape = Box2D.Collision.Shapes.b2EdgeShape
+			, b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+			, b2ContactListener = Box2D.Dynamics.b2ContactListener;
 		
-		//设置空间边界(此处没有空间边界)
-		var walls = [new cp.SegmentShape(staticBody, cp.v(0, 0),
-										cp.v(winSize.width, 0), 0),
-					 new cp.SegmentShape(staticBody, cp.v(0, winSize.height),
-										cp.v(winSize.width, winSize.height), 0),
-					 new cp.SegmentShape(staticBody, cp.v(0, 0),
-										cp.v(0, winSize.height), 0),
-					 new cp.SegmentShape(staticBody, cp.v(winSize.width, 0),
-										cp.v(winSize.width, winSize.height), 0)
-					];
-		for (var i = 0; i < walls.length; i++) {
-			var shape = walls[i];
-			shape.setElasticity(1);
-			shape.setFriction(0);
-			shape.collision_type = i;
-			this.space.addStaticShape(shape);
+		//创建物理世界
+		this.world = new b2World(new b2Vec2(0, -10), true);
+		//开启连续物理测试
+		this.world.SetContinuousPhysics(true);
+		
+		var fixDef = new b2FixtureDef;
+		fixDef.density = 1.0;
+		fixDef.friction = 0.5;
+		fixDef.restitution = 0.2;
+		
+		var bodyDef = new b2BodyDef;
+		bodyDef.type = b2Body.b2_staticBody;
+		
+		fixDef.shape = new b2PolygonShape;
+		var w = winSize.width;
+		var h = winSize.height;
+		
+		//设置宽度w的水平线
+		fixDef.shape.SetAsBox(w, h);
+		//顶部
+		bodyDef.position.Set(w/2, h);
+		this.world.CreateBody(bodyDef).CreateFixture(fixDef);
+		//底部
+		bodyDef.position.Set(w/2, 0);
+		this.world.CreateBody(bodyDef).CreateFixture(fixDef);
+		//设置高度h的垂直线
+		fixDef.shape.SetAsBox(0, h/2);
+		//左边
+		bodyDef.position.Set(0, h/2);
+		this.world.CreateBody(bodyDef).CreateFixture(fixDef);
+		//右边
+		bodyDef.position.Set(w, h/2);
+		this.world.CreateBody(bodyDef).CreateFixture(fixDef);
+		//检测碰撞设置接收碰撞回调函数
+		var listener = new b2ContactListener;
+		listener.BeginContact = function(contact) {
+			cc.log("BeginContact");
+			var bodyA = contact.GetFixtureA().GetBody();
+			var bodyB = contact.GetFixtureB().GetBody();
+			var spriteA = bodyA.GetUserData();
+			var spriteB = bodyB.GetUserData();
+			if (spriteA != null && spriteB != null) {
+				spriteA.setColor(new cc.Color(255, 255, 0, 255));
+				spriteB.setColor(new cc.Color(255, 255, 0, 255));
+			}
 		}
-	},
-	
-	setupDebugNode:function() {
-		this._debugNode = new cc.PhysicsDebugNode(this.space);
-		this._debugNode.visible = Constants.PHYSICS_DEBUG_NODE_SHOW;
-		this.addChild(this._debugNode);
+		listener.EndContact = function(contact) {
+			cc.log("EndContact");
+			var bodyA = contact.GetFixtureA().GetBody();
+			var bodyB = contact.GetFixtureB().GetBody();
+			var spriteA = bodyA.GetUserData();
+			var spriteB = bodyB.GetUserData();
+			if (spriteA != null && spriteB != null) {
+				spriteA.setColor(new cc.Color(255, 255, 255, 255));
+				spriteB.setColor(new cc.Color(255, 255, 255, 255));
+			}
+		}
+		listener.PostSolve = function(contact, impulse) {
+			cc.log("PostSolve");
+		}
+		listener.PreSolve = function(contact, oldManifold) {
+			cc.log("PreSolve");
+		}
+		this.world.SetContactListener(listener);
 	},
 	
 	_sdk_init:function() {
@@ -126,9 +169,19 @@ var MainLayer = cc.Scene.extend({
 		this._down_pad.y = pos.y;
 	},
 	
-	update:function() {
-		var timeStep = 0.07;
-		this.space.step(timeStep);
+	update:function(dt) {
+		var velocityIterations = 8;
+		var positionIterations = 1;
+		this.world.Step(dt, velocityIterations, positionIterations);
+		for (var b = this.world.GetBodyList(); b; b = b.GetNext()) {
+            if (b.GetUserData() != null) {
+                //Synchronize the AtlasSprites position and rotation with the corresponding body
+                var myActor = b.GetUserData();
+                //myActor.x = b.GetPosition().x;
+                //myActor.y = b.GetPosition().y;
+                //myActor.rotation = -1 * cc.radiansToDegrees(b.GetAngle());
+            }
+        }
 		return true;
 	},
 	
@@ -159,59 +212,6 @@ var MainLayer = cc.Scene.extend({
 		this._soundOn.setVisible(true);
 		this._soundSwitch = "on";
 		Storage.setCurrentSound("on");
-	},
-	
-	//碰撞检测
-	onCollisionCheck:function() {		
-		//添加碰撞检测事件
-		//important！如果有很多物体，此处需要遍历
-		//小球的collision_type始终是1,与其他的遍历
-		this.space.setDefaultCollisionHandler(
-            this.collisionBegin.bind(this),
-            this.collisionPre.bind(this),
-            this.collisionPost.bind(this),
-            this.collisionSeparate.bind(this)
-        );
-		/*this.space.addCollisionHandler(1, 2, 
-			this.collisionBegin.bind(this),
-			this.collisionPre.bind(this),
-			this.collisionPost.bind(this),
-			this.collisionSeparate.bind(this)
-		);
-		
-		this.space.addCollisionHandler(1, 3, 
-			this.collisionBegin.bind(this),
-			this.collisionPre.bind(this),
-			this.collisionPost.bind(this),
-			this.collisionSeparate.bind(this)
-		);*/
-	},
-	
-	//碰撞检测
-	collisionBegin:function(arbiter, space) {
-		var shapes = arbiter.getShapes();
-		var shapeA = shapes[0];
-		var shapeB = shapes[1];
-		var collTypeA = shapeA.collision_type;
-		var collTypeB = shapeB.collision_type;
-		//有任何的碰撞，游戏失败
-		if (collTypeA >= 1 && collTypeB >= 1) {
-			
-		}
-		return true;
-	},
-	
-	collisionPre:function(arbiter, space) {
-		//cc.log("collision Pre");
-		return true;
-	},
-	
-	collisionPost:function(arbiter, space) {
-		//cc.log("collision post");
-	},
-	
-	collisionSeparate:function(arbiter, space) {
-		//cc.log("collision seperate");
 	}
 });
 

@@ -1,4 +1,4 @@
-var DownPadSprite = cc.PhysicsSprite.extend({
+var DownPadSprite = cc.Sprite.extend({
 	_id:null,
 	_gameScene:null,
 	
@@ -13,21 +13,36 @@ var DownPadSprite = cc.PhysicsSprite.extend({
 		var winSize = cc.director.getWinSize();
 		//设置大小
 		this.scale = 0.15;
+		//设置物理引擎
+		var b2BodyDef = Box2D.Dynamics.b2BodyDef
+			, b2Body = Box2D.Dynamics.b2Body
+			, b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+			, b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
+
+		var winSize = cc.director.getWinSize();
+		//设置大小
+		this.scale = 0.15;
 		//设置物理引擎body及shape
 		var mass = 1;
 		var radius = 18;
-		var body = new cp.Body(1, cp.momentForCircle(mass, 0, radius, cp.v(0, 0)));
-		body.setPos(cc.p(winSize.width / 2, winSize.height / 7));
-		gameScene.space.addBody(body);
-		
-		var shape = new cp.CircleShape(body, radius, cp.v(0, 0));
-        shape.setElasticity(10);
-        shape.setFriction(10);
-		shape.collision_type = 2;
-		gameScene.space.addShape(shape);
-		
-		//创建物理引擎精灵对象
-		this.setBody(body);
+		//动态物体定义
+		var bodyDef = new b2BodyDef;
+		bodyDef.type = b2Body.b2_dynamicBody;
+		bodyDef.position.Set(winSize.width/2, winSize.height/7);
+		var body = this._gameScene.world.CreateBody(bodyDef);
+		body.SetUserData(this);
+		//定义圆形
+		var dynamicCircle = new b2CircleShape(radius);
+		//动态物体夹具定义
+		var fixtureDef = new b2FixtureDef();
+		//设置夹具的形状
+		fixtureDef.shape = dynamicCircle;
+		//设置密度
+		fixtureDef.density = 1.0;
+		//设置摩擦系数
+		fixtureDef.friction = 0.3;
+		//使用夹具固定形状到物体上
+		body.CreateFixture(fixtureDef);
 	},
 	
 	setCardId:function(id) {
