@@ -73,17 +73,18 @@ var MainLayer = cc.Scene.extend({
             , b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
 			, b2EdgeShape = Box2D.Collision.Shapes.b2EdgeShape
 			, b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+			, b2Settings = Box2D.Common.b2Settings
 			, b2ContactListener = Box2D.Dynamics.b2ContactListener;
 		
 		//创建物理世界
-		this.world = new b2World(new b2Vec2(0, -10), true);
+		this.world = new b2World(new b2Vec2(0, 0), false);
 		//开启连续物理测试
 		this.world.SetContinuousPhysics(true);
 		
 		var fixDef = new b2FixtureDef();
-		fixDef.density = 1.0;
-		fixDef.friction = 0.5;
-		fixDef.restitution = 0.2;
+		fixDef.density = 0.1;
+		fixDef.friction = 0.1;
+		fixDef.restitution = 1;
 		
 		var bodyDef = new b2BodyDef();
 		bodyDef.type = b2Body.b2_staticBody;
@@ -155,7 +156,7 @@ var MainLayer = cc.Scene.extend({
 		cc.director.end();
 	},
 	
-	//鼠标开始
+	//手指开始
 	_onMainTouchMoved:function(touch, event) {
 		var pos = touch.getLocation();
 		this._down_pad.x = pos.x;
@@ -177,9 +178,9 @@ var MainLayer = cc.Scene.extend({
             if (b.GetUserData() != null) {
                 //Synchronize the AtlasSprites position and rotation with the corresponding body
                 var myActor = b.GetUserData();
-                //myActor.x = b.GetPosition().x;
-                //myActor.y = b.GetPosition().y;
-                //myActor.rotation = -1 * cc.radiansToDegrees(b.GetAngle());
+                myActor.x = b.GetPosition().x;
+                myActor.y = b.GetPosition().y;
+                myActor.rotation = -1 * cc.radiansToDegrees(b.GetAngle());
             }
         }
 		return true;

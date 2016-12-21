@@ -24,7 +24,7 @@ var DownPadSprite = cc.Sprite.extend({
 		this.scale = 0.15;
 		//设置物理引擎body及shape
 		var mass = 1;
-		var radius = 18;
+		var radius = 16;
 		//动态物体定义
 		var bodyDef = new b2BodyDef;
 		bodyDef.type = b2Body.b2_dynamicBody;
@@ -38,9 +38,11 @@ var DownPadSprite = cc.Sprite.extend({
 		//设置夹具的形状
 		fixtureDef.shape = dynamicCircle;
 		//设置密度
-		fixtureDef.density = 1.0;
+		fixtureDef.density = 0.1;
 		//设置摩擦系数
-		fixtureDef.friction = 0.3;
+		fixtureDef.friction = 0.1;
+		//设置弹性系数
+		fixtureDef.restitution = 1.0;
 		//使用夹具固定形状到物体上
 		body.CreateFixture(fixtureDef);
 	},
