@@ -10,6 +10,7 @@ var MainLayer = cc.Scene.extend({
 	world:null,
 	_soundOn:null,				//静音按钮
 	_soundOff:null,
+	mouseJoint:null,
 	
 	ctor:function() {
 		this._super();
@@ -168,6 +169,10 @@ var MainLayer = cc.Scene.extend({
 		var pos = event.getLocation();
 		this._down_pad.x = pos.x;
 		this._down_pad.y = pos.y;
+		if (this.mouseJoint != null) {
+			var b2Vec2 = Box2D.Common.Math.b2Vec2; 
+			this.mouseJoint.SetTarget(new b2Vec2(pos.x, pos.y));  
+		}
 	},
 	
 	update:function(dt) {
