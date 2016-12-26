@@ -1,18 +1,5 @@
 var Constants = {
 	BALL_WIDTH : 219,
 	BALL_HEIGHT : 220,
-	BALL_JUMP_DISTANCE : 100,
-	BALL_JUMP_STEP : 30,
-	BALL_JUMP_SECONDS : 0.25,
-	BALL_FALL_DISTANCE : 5,
-	BALL_FALL_SECONDS : 0.3,
-	GAP_WIDTH : 85,
-	GAP_HEIGHT : 85,
-	ROUND_KEY : "jumpball.round",
-	ROUND_LABEL : "Round ",
-	ROUND_FAIL : "很遗憾，闯关失败，再接再厉哦！",
-	ROUND_SUCCESS : "厉害啊，闯关成功，\n后面还有更难的，\n不要骄傲哦！",
-	ROUND_FINISH : "您真是厉害，\n居然通过了所有的关卡。",
-	
-	PHYSICS_DEBUG_NODE_SHOW : true
+	PTM_RATIO: 32,		//PTM_RATIO用于定义32个像素在Box2D世界中等同于1米。一个有32像素宽和高的盒子形状的刚体等同于1米宽和高的物体。2x32像素大小的瓷砖的尺寸刚好是1x1米，大小4x4像素的大小是0.125米x0.125米。  Box2d在处理大小在0.1到10个单元的对象的时候做了一些优化。这里的0.1米大概就是一个杯子那么大，10的话，大概就是一个箱子的大小。
 }

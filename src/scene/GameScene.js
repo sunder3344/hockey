@@ -162,6 +162,10 @@ var MainLayer = cc.Scene.extend({
 		var pos = touch.getLocation();
 		this._down_pad.x = pos.x;
 		this._down_pad.y = pos.y;
+		if (this.mouseJoint != null) {
+			var b2Vec2 = Box2D.Common.Math.b2Vec2; 
+			this.mouseJoint.SetTarget(new b2Vec2(pos.x, pos.y));
+		}
 	},
 	
 	//鼠标移动
@@ -171,7 +175,7 @@ var MainLayer = cc.Scene.extend({
 		this._down_pad.y = pos.y;
 		if (this.mouseJoint != null) {
 			var b2Vec2 = Box2D.Common.Math.b2Vec2; 
-			this.mouseJoint.SetTarget(new b2Vec2(pos.x, pos.y));		
+			this.mouseJoint.SetTarget(new b2Vec2(pos.x, pos.y));
 		}
 	},
 	
