@@ -32,7 +32,7 @@ var DownPadSprite = cc.Sprite.extend({
 		bodyDef.position.Set(winSize.width/2, winSize.height/7);
 		var body = this._gameScene.world.CreateBody(bodyDef);
 		body.SetUserData(this);
-		var b2Vec2 = Box2D.Common.Math.b2Vec2; 
+		var b2Vec2 = Box2D.Common.Math.b2Vec2;
 		body.SetLinearVelocity(new b2Vec2(1000, 1000));
 		//定义圆形
 		var dynamicCircle = new b2CircleShape(radius);
@@ -48,14 +48,16 @@ var DownPadSprite = cc.Sprite.extend({
 		fixtureDef.restitution = 1.0;
 		//使用夹具固定形状到物体上
 		body.CreateFixture(fixtureDef);
+		//施加力量http://lib.ivank.net/?p=demos&d=box2D
+		this._gameScene._ball._body.ApplyImpulse(new b2Vec2(0, -5), this._gameScene._ball._body.GetWorldCenter());
 		
 		var mouseJointDef = new b2MouseJointDef();  
         mouseJointDef.bodyA = this._gameScene.world.GetGroundBody();  
-        mouseJointDef.bodyB = body;  
+        mouseJointDef.bodyB = body;
         mouseJointDef.target.Set(winSize.width/2, winSize.height/7);  
-        mouseJointDef.maxForce = 900000000;
-		mouseJointDef.frequencyHz = 1000;
-		mouseJointDef.dampingRatio = 1000;
+        mouseJointDef.maxForce = 10000.0 * body.GetMass();
+		mouseJointDef.frequencyHz = 100;
+		mouseJointDef.dampingRatio = 0;
         this._gameScene.mouseJoint = this._gameScene.world.CreateJoint(mouseJointDef); 
 	},
 	

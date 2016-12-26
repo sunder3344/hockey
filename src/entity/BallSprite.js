@@ -1,6 +1,7 @@
 var BallSprite = cc.Sprite.extend({
 	_id:null,
 	_gameScene:null,
+	_body:null,
 	
 	ctor:function(gameScene) {
 		this._super(res.BALL_SPRITE);
@@ -25,8 +26,8 @@ var BallSprite = cc.Sprite.extend({
 		var bodyDef = new b2BodyDef();
 		bodyDef.type = b2Body.b2_dynamicBody;
 		bodyDef.position.Set(winSize.width/2, winSize.height/2);
-		var body = this._gameScene.world.CreateBody(bodyDef);
-		body.SetUserData(this);
+		this._body = this._gameScene.world.CreateBody(bodyDef);
+		this._body.SetUserData(this);
 		//定义圆形
 		var dynamicCircle = new b2CircleShape(radius);
 		//动态物体夹具定义
@@ -40,7 +41,7 @@ var BallSprite = cc.Sprite.extend({
 		//设置弹性系数
 		fixtureDef.restitution = 1.0;
 		//使用夹具固定形状到物体上
-		body.CreateFixture(fixtureDef);
+		this._body.CreateFixture(fixtureDef);
 	},
 	
 	setCardId:function(id) {
