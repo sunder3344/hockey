@@ -171,7 +171,7 @@ var MainLayer = cc.Scene.extend({
 		this._down_pad.y = pos.y;
 		if (this.mouseJoint != null) {
 			var b2Vec2 = Box2D.Common.Math.b2Vec2; 
-			this.mouseJoint.SetTarget(new b2Vec2(pos.x, pos.y));  
+			this.mouseJoint.SetTarget(new b2Vec2(pos.x, pos.y));		
 		}
 	},
 	
