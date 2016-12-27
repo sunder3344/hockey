@@ -175,7 +175,7 @@ var MainLayer = cc.Scene.extend({
 			this.world.DestroyJoint(this.mouseJoint);
 			this.mouseJoint = null;
 		}
-	}
+	},
 	
 	//鼠标移动
 	_onMainMouseMove:function(event) {
