@@ -18,7 +18,7 @@ var DownPadSprite = cc.Sprite.extend({
 		var b2BodyDef = Box2D.Dynamics.b2BodyDef
 			, b2Body = Box2D.Dynamics.b2Body
 			, b2FixtureDef = Box2D.Dynamics.b2FixtureDef
-			,b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef
+			, b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef
 			, b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
 		var winSize = cc.director.getWinSize();
@@ -26,15 +26,15 @@ var DownPadSprite = cc.Sprite.extend({
 		this.scale = 0.15;
 		//设置物理引擎body及shape
 		var mass = 1;
-		var radius = 16;
+		var radius = 16/Constants.PTM_RATIO;
 		//动态物体定义
 		var bodyDef = new b2BodyDef;
 		bodyDef.type = b2Body.b2_dynamicBody;
-		bodyDef.position.Set(winSize.width/2, winSize.height/7);
+		bodyDef.position.Set((winSize.width/2)/Constants.PTM_RATIO, (winSize.width/7)/Constants.PTM_RATIO);
 		this._body = this._gameScene.world.CreateBody(bodyDef);
 		this._body.SetUserData(this);
 		var b2Vec2 = Box2D.Common.Math.b2Vec2;
-		this._body.SetLinearVelocity(new b2Vec2(1000, 1000));
+		//this._body.SetLinearVelocity(new b2Vec2(1000, 1000));
 		//定义圆形
 		var dynamicCircle = new b2CircleShape(radius);
 		//动态物体夹具定义
@@ -44,9 +44,9 @@ var DownPadSprite = cc.Sprite.extend({
 		//设置密度
 		fixtureDef.density = 1;
 		//设置摩擦系数
-		fixtureDef.friction = 0.8;
+		fixtureDef.friction = 1;
 		//设置弹性系数
-		fixtureDef.restitution = 1.0;
+		fixtureDef.restitution = 1;
 		//使用夹具固定形状到物体上
 		this._body.CreateFixture(fixtureDef);
 		//施加力量http://lib.ivank.net/?p=demos&d=box2D
@@ -55,9 +55,9 @@ var DownPadSprite = cc.Sprite.extend({
 		var mouseJointDef = new b2MouseJointDef();  
         mouseJointDef.bodyA = this._gameScene.world.GetGroundBody();  
         mouseJointDef.bodyB = this._body;
-        mouseJointDef.target.Set(winSize.width/2, winSize.height/7);  
+        mouseJointDef.target.Set((winSize.width/2)/Constants.PTM_RATIO, (winSize.height/7)/Constants.PTM_RATIO);  
         mouseJointDef.maxForce = 10000.0 * this._body.GetMass();
-		mouseJointDef.frequencyHz = 100;
+		mouseJointDef.frequencyHz = 1000;
 		mouseJointDef.dampingRatio = 0;
         this._gameScene.mouseJoint = this._gameScene.world.CreateJoint(mouseJointDef); 
 	},

@@ -22,7 +22,7 @@ var MainLayer = cc.Scene.extend({
 		//冰球
 		this._ball = BallSprite.create(this);
 		this._ball.x = winSize.width / 2;
-		this._ball.y = winSize.height / 2;
+		this._ball.y = winSize.width / 2;
 		this.addChild(this._ball, 1);
 		
 		//上拍
@@ -30,7 +30,7 @@ var MainLayer = cc.Scene.extend({
 		//下拍
 		this._down_pad = DownPadSprite.create(this);
 		this._down_pad.x = winSize.width / 2;
-		this._down_pad.y = winSize.height / 7;
+		this._down_pad.y = winSize.width / 7;
 		this.addChild(this._down_pad, 1);
 		
 		//this._sdk_init();
@@ -72,27 +72,27 @@ var MainLayer = cc.Scene.extend({
             , b2FixtureDef = Box2D.Dynamics.b2FixtureDef
             , b2World = Box2D.Dynamics.b2World
             , b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
-			, b2EdgeShape = Box2D.Collision.Shapes.b2EdgeShape
-			, b2DebugDraw = Box2D.Dynamics.b2DebugDraw
-			, b2Settings = Box2D.Common.b2Settings
+			//, b2EdgeShape = Box2D.Collision.Shapes.b2EdgeShape
+			//, b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+			//, b2Settings = Box2D.Common.b2Settings
 			, b2ContactListener = Box2D.Dynamics.b2ContactListener;
 		
 		//创建物理世界
-		this.world = new b2World(new b2Vec2(0, 0), false);
+		this.world = new b2World(new b2Vec2(0, 0), true);
 		//开启连续物理测试
 		this.world.SetContinuousPhysics(true);
 		
 		var fixDef = new b2FixtureDef();
-		fixDef.density = 0.1;
-		fixDef.friction = 0.1;
-		fixDef.restitution = 1;
+		fixDef.density = 1;
+		fixDef.friction = 0.5;
+		fixDef.restitution = 0.2;
+		var w = winSize.width / Constants.PTM_RATIO;
+		var h = winSize.height / Constants.PTM_RATIO;
 		
 		var bodyDef = new b2BodyDef();
 		bodyDef.type = b2Body.b2_staticBody;
 		
 		fixDef.shape = new b2PolygonShape();
-		var w = winSize.width;
-		var h = winSize.height;
 		
 		//设置宽度w的水平线
 		fixDef.shape.SetAsBox(w/2, 0);
@@ -164,7 +164,7 @@ var MainLayer = cc.Scene.extend({
 		this._down_pad.y = pos.y;
 		if (this.mouseJoint != null) {
 			var b2Vec2 = Box2D.Common.Math.b2Vec2; 
-			this.mouseJoint.SetTarget(new b2Vec2(pos.x, pos.y));
+			this.mouseJoint.SetTarget(new b2Vec2(pos.x/Constants.PTM_RATIO, pos.y/Constants.PTM_RATIO));
 		}
 	},
 	
@@ -175,9 +175,20 @@ var MainLayer = cc.Scene.extend({
 		this._down_pad.y = pos.y;
 		if (this.mouseJoint != null) {
 			var b2Vec2 = Box2D.Common.Math.b2Vec2; 
-			this.mouseJoint.SetTarget(new b2Vec2(pos.x, pos.y));
+			this.mouseJoint.SetTarget(new b2Vec2(pos.x/Constants.PTM_RATIO, pos.y/Constants.PTM_RATIO));
 		}
 	},
+	
+	/*draw:function()  
+    {  
+        var pos = this._ball.getPosition();  
+        cc.drawingUtil.setDrawColor4B(255,255,255,255);  
+        cc.drawingUtil.drawCircle(cc.p(pos.x, pos.y), 32, 0, 10, true);  
+  
+        var down_pad = this._down_pad.getPosition();  
+        cc.drawingUtil.setDrawColor4B(255,255,255,255);  
+        cc.drawingUtil.drawCircle(cc.p(down_pad.x, down_pad.y), 12, 0, 10, true);  
+    },*/
 	
 	update:function(dt) {
 		var velocityIterations = 8;
@@ -187,8 +198,9 @@ var MainLayer = cc.Scene.extend({
             if (b.GetUserData() != null) {
                 //Synchronize the AtlasSprites position and rotation with the corresponding body
                 var myActor = b.GetUserData();
-                myActor.x = b.GetPosition().x;
-                myActor.y = b.GetPosition().y;
+                //myActor.x = b.GetPosition().x * Constants.PTM_RATIO;
+                //myActor.y = b.GetPosition().y * Constants.PTM_RATIO;
+				myActor.setPosition(cc.p(b.GetPosition().x * Constants.PTM_RATIO, b.GetPosition().y * Constants.PTM_RATIO)); 
                 myActor.rotation = -1 * cc.radiansToDegrees(b.GetAngle());
             }
         }

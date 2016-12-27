@@ -21,11 +21,11 @@ var BallSprite = cc.Sprite.extend({
 		this.scale = 0.15;
 		//设置物理引擎body及shape
 		var mass = 1;
-		var radius = 16;
+		var radius = 16/Constants.PTM_RATIO;
 		//动态物体定义
 		var bodyDef = new b2BodyDef();
 		bodyDef.type = b2Body.b2_dynamicBody;
-		bodyDef.position.Set(winSize.width/2, winSize.height/2);
+		bodyDef.position.Set((winSize.width/2)/Constants.PTM_RATIO, (winSize.width/2)/Constants.PTM_RATIO);
 		this._body = this._gameScene.world.CreateBody(bodyDef);
 		this._body.SetUserData(this);
 		//定义圆形
@@ -37,9 +37,9 @@ var BallSprite = cc.Sprite.extend({
 		//设置密度
 		fixtureDef.density = 0.1;
 		//设置摩擦系数
-		fixtureDef.friction = 0.1;
+		fixtureDef.friction = 0.9;
 		//设置弹性系数
-		fixtureDef.restitution = 1.0;
+		fixtureDef.restitution = 0.2;
 		//使用夹具固定形状到物体上
 		this._body.CreateFixture(fixtureDef);
 	},
