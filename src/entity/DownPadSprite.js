@@ -52,14 +52,15 @@ var DownPadSprite = cc.Sprite.extend({
 		//施加力量http://lib.ivank.net/?p=demos&d=box2D
 		//this._gameScene._ball._body.ApplyImpulse(new b2Vec2(0, -5), this._gameScene._ball._body.GetWorldCenter());
 		
-		var mouseJointDef = new b2MouseJointDef();  
-        mouseJointDef.bodyA = this._gameScene.world.GetGroundBody();  
-        mouseJointDef.bodyB = this._body;
-        mouseJointDef.target.Set((winSize.width/2)/Constants.PTM_RATIO, (winSize.height/7)/Constants.PTM_RATIO);  
-        mouseJointDef.maxForce = 10000.0 * this._body.GetMass();
+		var mouseJointDef = new b2MouseJointDef();
+        mouseJointDef.bodyA = this._gameScene.world.GetGroundBody();			//一般为世界边界 
+        mouseJointDef.bodyB = this._body;										//需要拖动的物体 
+        mouseJointDef.target.Set((winSize.width/2)/Constants.PTM_RATIO, (winSize.height/7)/Constants.PTM_RATIO);  //指定拖动的坐标
+        mouseJointDef.maxForce = 10000.0 * this._body.GetMass();				//给一个拖动的力
+		mouseJointDef.collideConnected = false;
 		mouseJointDef.frequencyHz = 1000;
 		mouseJointDef.dampingRatio = 0;
-        this._gameScene.mouseJoint = this._gameScene.world.CreateJoint(mouseJointDef); 
+        this._gameScene.mouseJoint = this._gameScene.world.CreateJoint(mouseJointDef);
 	},
 	
 	setCardId:function(id) {

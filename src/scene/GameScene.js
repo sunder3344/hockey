@@ -40,7 +40,8 @@ var MainLayer = cc.Scene.extend({
 			layerListener = cc.EventListener.create({
 				event: cc.EventListener.TOUCH_ONE_BY_ONE,
 				swallowTouches: true,
-				onTouchMoved: this._onMainTouchMoved.bind(this)
+				onTouchMoved: this._onMainTouchMoved.bind(this),
+				onTouchEnded: this._onMainTouchEnded.bind(this)
 			});
 		} else {
 			layerListener = cc.EventListener.create({
@@ -167,6 +168,14 @@ var MainLayer = cc.Scene.extend({
 			this.mouseJoint.SetTarget(new b2Vec2(pos.x/Constants.PTM_RATIO, pos.y/Constants.PTM_RATIO));
 		}
 	},
+	
+	//手指结束
+	_onMainTouchEnded:function(touch, event) {
+		if (this.mouseJoint != null) {
+			this.world.DestroyJoint(this.mouseJoint);
+			this.mouseJoint = null;
+		}
+	}
 	
 	//鼠标移动
 	_onMainMouseMove:function(event) {
