@@ -30,6 +30,10 @@ var DownPadSprite = cc.Sprite.extend({
 		//动态物体定义
 		var bodyDef = new b2BodyDef;
 		bodyDef.type = b2Body.b2_dynamicBody;
+		bodyDef.fixedRotation = true;				//控制物体是否在鼠标周围旋转(true:不旋转；false:旋转)
+		bodyDef.angle = cc.degreesToRadians(0);
+		bodyDef.linearDamping = 0
+		bodyDef.angularDamping = 0;
 		bodyDef.position.Set((winSize.width/2)/Constants.PTM_RATIO, (winSize.width/7)/Constants.PTM_RATIO);
 		this._body = this._gameScene.world.CreateBody(bodyDef);
 		this._body.SetUserData(this);
@@ -58,7 +62,7 @@ var DownPadSprite = cc.Sprite.extend({
         mouseJointDef.target.Set((winSize.width/2)/Constants.PTM_RATIO, (winSize.height/7)/Constants.PTM_RATIO);  //指定拖动的坐标
         mouseJointDef.maxForce = 10000.0 * this._body.GetMass();				//给一个拖动的力
 		mouseJointDef.collideConnected = false;
-		mouseJointDef.frequencyHz = 1000;
+		mouseJointDef.frequencyHz = 30;
 		mouseJointDef.dampingRatio = 0;
         this._gameScene.mouseJoint = this._gameScene.world.CreateJoint(mouseJointDef);
 	},
